@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Risk Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 8px; margin-bottom: 10px; }
+        button { background: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+        button:hover { background: #45a049; }
+    </style>
+</head>
+<body>
+    <h1>Medical Risk Calculator</h1>
+    <div class="form-container">
+        <div class="form-group">
+            <label for="age">Age (years):</label>
+            <input type="number" id="age" step="1" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="bmi">Body Mass Index (kg/m²):</label>
+            <input type="number" id="bmi" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="gender">Gender:</label>
+            <select id="gender" required>
+                <option value="1">Male</option>
+                <option value="0">Female</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ratio">Albumin/Alkaline Phosphatase Ratio:</label>
+            <input type="number" id="ratio" step="0.01" required>
+        </div>
+
+        <button onclick="calculate()">Calculate</button>
+    </div>
+
+    <script>
+        function calculate() {
+            // 获取输入值
+            const age = parseFloat(document.getElementById('age').value);
+            const bmi = parseFloat(document.getElementById('bmi').value);
+            const gender = parseInt(document.getElementById('gender').value);
+            const ratio = parseFloat(document.getElementById('ratio').value);
+
+            // 验证输入
+            if (isNaN(age) || isNaN(bmi) || isNaN(ratio)) {
+                alert("Please fill in all fields with valid numbers");
+                return;
+            }
+
+            // 计算公式
+            const fx = -6.35634 + 
+                      (0.16042 * age) - 
+                      (0.16679 * bmi) - 
+                      (0.46871 * gender) - 
+                      (2.00693 * ratio);
+            
+            const p = 1 / (1 + Math.exp(-fx));
+
+            // 创建结果页面
+            const resultPage = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculation Result</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .result { 
+            max-width: 600px; 
+            margin: 50px auto; 
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        h2 { color: #2c3e50; }
+        .value { 
+            font-size: 24px;
+            color: #27ae60;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="result">
+        <h2>Calculation Result</h2>
+        <p>Probability (P value):</p>
+        <div class="value">${p.toFixed(4)}</div>
+        <p><button onclick="window.close()">Close</button></p>
+    </div>
+</body>
+</html>`;
+
+            // 显示结果
+            const newWindow = window.open();
+            newWindow.document.write(resultPage);
+            newWindow.document.close();
+        }
+    </script>
+</body>
+</html>
